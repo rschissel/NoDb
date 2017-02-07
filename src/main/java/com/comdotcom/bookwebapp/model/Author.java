@@ -1,4 +1,4 @@
-package com.comdotcom.bookwebapp;
+package com.comdotcom.bookwebapp.model;
 
 import java.util.Date;
 import java.util.Objects;
