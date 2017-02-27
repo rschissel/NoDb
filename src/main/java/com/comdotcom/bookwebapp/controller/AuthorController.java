@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Ryan Schissel
  */
-@WebServlet(name = "BookWebAppController", urlPatterns = {"/BookWebAppController"})
+@WebServlet(name = "BookWebAppController", urlPatterns = {"/AuthorController"})
 public class AuthorController extends HttpServlet {
 
     /**
@@ -32,19 +32,19 @@ public class AuthorController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    private String driverClassName = "com.mysql.jdbc.Driver";
-    private String url = "jdbc:mysql://localhost:3306/book";
-    private String userName = "root";
-    private String password = "admin";
+    private String driverClass; //= "com.mysql.jdbc.Driver";
+    private String url; // = "jdbc:mysql://localhost:3306/book";
+    private String userName; // = "root";
+    private String password; // = "admin";
     private static final String RESULT_PAGE = "index.jsp";
     private static final String ERR_PAGE = "errorpage.html";
-
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         RequestDispatcher view = null;
         AuthorService as = new AuthorService(
                 new AuthorDao(
-                        new MySqlDbAccessor(), driverClassName, url, userName,password
+                        new MySqlDbAccessor(), driverClass, url, userName,password
                 )
         );
         try {
@@ -102,6 +102,13 @@ public class AuthorController extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
+    }
+    @Override
+    public void init() throws ServletException{
+        driverClass = getServletContext().getInitParameter("db.driver.class");
+        url = getServletContext().getInitParameter("db.url");
+        userName = getServletContext().getInitParameter("db.username");
+        password = getServletContext().getInitParameter("db.password");
     }// </editor-fold>
 
 }
