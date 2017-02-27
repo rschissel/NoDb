@@ -5,6 +5,10 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,30 +16,21 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
         <title>Book Web App</title>
     </head>
+    <h1>Authors:</h1>
     <body>
-        <nav class="navbar navbar-default">
-            <div class="navbar-header">
-                   <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                   </button>
-                <a class="navbar-brand" href="#">My Incredibly Awesome Book Web App</a>
-            </div>
-            <div class="dropdown">
-                <button class="btn btn-default dropdown-toggle" type="button" id="actionMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Action<span class="caret"></span></button>
-                <ul class="dropdown-menu" aria-labelledby="actionMenu">
-                    <li>Add</li>
-                    <li>Edit</li>
-                    <li>Delete</li>
-                </ul>
-            </div>
-        </nav>
-  <script
-  src="https://code.jquery.com/jquery-2.2.4.min.js"
-  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
-  crossorigin="anonymous"></script>
+        <table>
+            <c:forEach items="${authors}" var="current">
+                <tr>
+                    <td><c:out value="${current.authorId}"/><td>
+                    <td><c:out value="${current.authorName}"/></td>
+                    <td><c:out value="${current.dateAdded}"/></td>
+                </tr>
+            </c:forEach>
+        </table>
+        <script
+            src="https://code.jquery.com/jquery-2.2.4.min.js"
+            integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
         <script src="resources/js/bookwebapp.js" type="text/javascript"></script>
     </body>

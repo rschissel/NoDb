@@ -13,11 +13,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringJoiner;
 
 /**
@@ -77,7 +75,7 @@ public class MySqlDbAccessor implements DbAccessor {
     }
 
     @Override
-    public void createNewRecord(String tableName, List<String> columnNames, List<String> values) throws SQLException {
+    public void createNewRecord(String tableName, List<String> columnNames, List<Object> values) throws SQLException {
         // INSERT INTO author (author_name,date) VALUES(?,?,?)
         String sql = "INSERT INTO " + tableName + " ";
         StringJoiner sj = new StringJoiner(",", "(", ")");
@@ -92,36 +90,40 @@ public class MySqlDbAccessor implements DbAccessor {
         }
         sql += sj.toString();
         PreparedStatement pstm = conn.prepareStatement(sql);
-        for (String val : values) {
+        for (Object val : values) {
             pstm.setObject(values.indexOf(val) + 1, val);
         }
         pstm.executeUpdate();
     }
 
     @Override
-    public void deleteByColumnValue(String tableName, List<String> whereClauseColumnNames, List<Object> whereClauseColumnValues) throws ClassNotFoundException, SQLException {
+    public void deleteByColumnValue(String tableName, String whereClauseColumnName, Object whereClauseColumnValue) throws ClassNotFoundException, SQLException {
         PreparedStatement pstm = null;
-        for (int i = 0; i < whereClauseColumnNames.size(); i++) {
-            String sql = "DELETE FROM " + tableName + " WHERE " + "? = ?";
+            String sql = "DELETE FROM " + tableName + " WHERE " + whereClauseColumnName + " = ?";
             pstm = conn.prepareStatement(sql);
-            pstm.setObject(1, whereClauseColumnNames.get(i));
-            pstm.setObject(2, whereClauseColumnValues.get(i));
+            pstm.setObject(1, whereClauseColumnValue);
             pstm.executeUpdate();
-        }
     }
-
-    public void updateByColumnValue(String tableName, List<String> columnNames, List<Object> newValues, List<String> whereClauseColumnNames, List<Object> whereClauseValues) throws SQLException {
+    @Override
+    public void updateByColumnValue(String tableName, List<String> columnNames, List<Object> newValues, String whereClauseColumnName, Object whereClauseValue) throws SQLException {
         PreparedStatement pstm = null;
-        String sql = "UPDATE " + tableName + " SET " + "? = ?"
-                    + " WHERE " + "? = ?";
-        for (int i = 0; i < whereClauseColumnNames.size(); i++) {
-            pstm = conn.prepareStatement(sql);
-            pstm.setObject(1, columnNames.get(i));
-            pstm.setObject(2, newValues.get(i));
-            pstm.setObject(3, whereClauseColumnNames.get(i));
-            pstm.setObject(4, whereClauseValues.get(i));
-            pstm.executeUpdate();
+        // UPDATE author SET author_name = ?,author_date = ?  WHERE authorId = ?
+        String sql = "UPDATE " + tableName + " SET ";
+        StringJoiner sj = new StringJoiner("= ? ");
+        
+        for (String col : columnNames) {
+            sj.add(col);
         }
+        sql += sj.toString();
+        sql += " = ?";
+        sql += " WHERE " + whereClauseColumnName + " = ?";
+        System.out.println(sql);
+        pstm = conn.prepareStatement(sql);
+        for (int i = 0; i < newValues.size(); i++) {
+            pstm.setObject(i + 1, newValues.get(i));
+        }
+        pstm.setObject(newValues.size() + 1, whereClauseValue);
+        pstm.executeUpdate();
     }
 
     public String removeEndingComma(String sql) {
@@ -139,25 +141,19 @@ public class MySqlDbAccessor implements DbAccessor {
 
         List<String> columnNames = new ArrayList<>();
         List<Object> newValues = new ArrayList<>();
-        List<String> whereClauseColumnNames = new ArrayList<>();
-        List<Object> whereClauseValues = new ArrayList<>();
+        columnNames.add("author_name");
+        newValues.add("Luke Warm");
+        String whereClauseColumnName = "author_id";
+        Object whereClauseValue = 4;
+        //db.updateByColumnValue("author", columnNames, newValues, whereClauseColumnName, whereClauseValue);
 
-        columnNames.add("author");
-        newValues.add("Anna Sassin");
-        whereClauseColumnNames.add("author_id");
-        whereClauseValues.add(4);
-        whereClauseColumnNames.add("author_name");
-        whereClauseValues.add("Peter Mann");
-
-        db.deleteByColumnValue("author", whereClauseColumnNames, whereClauseValues);
-
-        List<Map<String, Object>> records = db.findRecordsFor("author", 50);
-        db.closeConnection();
-
-        for (Map<String, Object> record : records) {
-            System.out.println(record);
-        }
-
+        db.deleteByColumnValue("author", whereClauseColumnName, whereClauseValue);
+//        List<Map<String, Object>> records = db.findRecordsFor("author", 50);
+//        db.closeConnection();
+//
+//        for (Map<String, Object> record : records) {
+//            System.out.println(record);
+//        }
     }
 
 }

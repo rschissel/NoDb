@@ -21,7 +21,7 @@ public class Author {
     public Author(Integer authorId) {
         this.authorId = authorId;
     }
-
+    
     public Author(Integer authorId, String authorName, Date dateAdded) {
         this.authorId = authorId;
         this.authorName = authorName;
