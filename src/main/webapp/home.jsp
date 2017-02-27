@@ -13,6 +13,6 @@
     </head>
     <body>
         <h1>Hello World!</h1>
-        <p><a href="BookWebAppController">Get Author List</a></p>
+        <p><a href="AuthorController">Get Author List</a></p>
     </body>
 </html>
